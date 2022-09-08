@@ -40,6 +40,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * FlutterAppauthPlugin
@@ -525,6 +526,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
     }
 
     private void processAuthorizationData(final AuthorizationResponse authResponse, AuthorizationException authException, boolean exchangeCode) {
+        Log.d("processAuthorizationData", authResponse.additionalParameters.toString());
         if (authException == null) {
             if (exchangeCode) {
                 AppAuthConfiguration.Builder authConfigBuilder = new AppAuthConfiguration.Builder();
@@ -546,9 +548,9 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
                     }
                 };
                 if (clientSecret == null) {
-                    authService.performTokenRequest(authResponse.createTokenExchangeRequest(), tokenResponseCallback);
+                    authService.performTokenRequest(authResponse.createTokenExchangeRequest(authResponse.additionalParameters), tokenResponseCallback);
                 } else {
-                    authService.performTokenRequest(authResponse.createTokenExchangeRequest(), new ClientSecretBasic(clientSecret), tokenResponseCallback);
+                    authService.performTokenRequest(authResponse.createTokenExchangeRequest(authResponse.additionalParameters), new ClientSecretBasic(clientSecret), tokenResponseCallback);
                 }
             } else {
                 finishWithSuccess(authorizationResponseToMap(authResponse));
